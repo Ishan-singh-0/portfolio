@@ -608,79 +608,50 @@ window.initGSAP = function() {
   if(typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
   gsap.registerPlugin(ScrollTrigger);
 
-  // Let ScrollTrigger know about Lenis
+  // Sync with Lenis
   if(typeof lenis !== 'undefined') {
     lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add(function(time){ lenis.raf(time * 1000); });
     gsap.ticker.lagSmoothing(0);
   }
 
   ScrollTrigger.refresh();
 
-  // --- Parallax on project thumbnails ---
+  // --- Image parallax ONLY (no opacity changes ever) ---
   document.querySelectorAll('.proj-thumb').forEach(function(img) {
-    var parent = img.parentElement;
-    img.style.transformOrigin = 'center center';
+    var trigger = img.closest('.proj-item') || img.parentElement;
     gsap.fromTo(img,
-      { yPercent: -12, scale: 1.25 },
-      { yPercent: 12, scale: 1.25, ease: 'none',
-        scrollTrigger: { trigger: parent, scrub: 1 }
+      { yPercent: -10, scale: 1.2 },
+      { yPercent: 10, scale: 1.2, ease: 'none',
+        scrollTrigger: { trigger: trigger, scrub: 1.5 }
       }
     );
   });
 
-  // --- Staggered section reveal ---
-  document.querySelectorAll('.tech-tile, .tl-item, .faq-item, .princ, .proj-item').forEach(function(el) {
-    gsap.fromTo(el,
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 92%', once: true }
-      }
-    );
-  });
-
-  // --- About text word reveal ---
+  // --- About text word reveal (slide up only, no hiding) ---
   document.querySelectorAll('.about-txt').forEach(function(el) {
-    var words = el.innerText.split(' ');
+    var txt = el.innerText;
     el.innerHTML = '';
-    words.forEach(function(word) {
+    txt.split(' ').forEach(function(word) {
       if(!word.trim()) { el.appendChild(document.createTextNode(' ')); return; }
       var outer = document.createElement('span');
-      outer.style.cssText = 'overflow:hidden;display:inline-block;vertical-align:top';
+      outer.style.cssText = 'overflow:hidden;display:inline-block;vertical-align:top;';
       var inner = document.createElement('span');
       inner.innerText = word + '\u00a0';
-      inner.style.cssText = 'display:inline-block;will-change:transform';
+      inner.style.display = 'inline-block';
       outer.appendChild(inner);
       el.appendChild(outer);
       gsap.fromTo(inner,
-        { y: '105%' },
-        { y: '0%', duration: 1, ease: 'power4.out',
-          scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+        { y: '100%' },
+        { y: '0%', duration: 0.9, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 90%', once: true }
         }
       );
     });
   });
-
-  // --- Footer headline reveal ---
-  var footHl = document.querySelector('.foot-hl');
-  if(footHl) {
-    gsap.fromTo(footHl,
-      { y: 60, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1.2, ease: 'power4.out',
-        scrollTrigger: { trigger: footHl, start: 'top 85%', once: true }
-      }
-    );
-  }
-
-  // --- Velocity-linked marquee ---
-  var lastY = 0, tScale = 1;
-  lenis && lenis.on('scroll', function(e) {
-    var dir = e.velocity > 0 ? 1 : -1;
-    if(dir !== tScale) {
-      tScale = dir;
-    }
-  });
 };
+
+
+
 
 
 /* SCROLL */
