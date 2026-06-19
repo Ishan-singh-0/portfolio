@@ -125,6 +125,8 @@ nav.snav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items
 /* ===== MAIN ===== */
 main{opacity:0;transition:opacity .6s}
 main.shown{opacity:1}
+.reveal{opacity:1;transform:none}
+.gsap-hide{opacity:0;transform:translateY(40px)}
 /* ===== HERO ===== */
 .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 clamp(1.5rem,5vw,4rem) 4rem;padding-top:64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
 .hero-top{position:absolute;top:80px;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;padding:0 clamp(1.5rem,5vw,4rem)}
@@ -592,85 +594,93 @@ var ARR='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="cur
       seam.style.display="none";
       document.body.classList.remove("locked");
       if(typeof lenis!=='undefined'){ lenis.start(); }
+      if(typeof ScrollTrigger!=='undefined'){ setTimeout(function(){ ScrollTrigger.refresh(); }, 100); }
       document.getElementById("main").classList.add("shown");
+      setTimeout(function(){ if(typeof window.initGSAP==='function') window.initGSAP(); }, 200);
       
     }, 2500);
   });
 })();
 
 
-/* GSAP & SCROLLTRIGGER SETUP */
-gsap.registerPlugin(ScrollTrigger);
+/* GSAP ANIMATIONS — deferred, runs after boot via window.initGSAP() */
+window.initGSAP = function() {
+  if(typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+  gsap.registerPlugin(ScrollTrigger);
 
-// Utility to split text into lines/words for masking
-document.querySelectorAll('.about-txt, .sec-lbl, .foot-hl').forEach(function(el) {
-    var text = el.innerText;
-    el.innerHTML = '';
-    text.split(' ').forEach(function(word) {
-        if(word.trim() === '') { el.appendChild(document.createTextNode(' ')); return; }
-        var wrap = document.createElement('span');
-        wrap.style.overflow = 'hidden';
-        wrap.style.display = 'inline-block';
-        wrap.style.verticalAlign = 'top';
-        var inner = document.createElement('span');
-        inner.innerText = word + ' ';
-        inner.style.display = 'inline-block';
-        inner.style.transform = 'translateY(110%)';
-        inner.className = 'gsap-word';
-        wrap.appendChild(inner);
-        el.appendChild(wrap);
-    });
-});
+  // Let ScrollTrigger know about Lenis
+  if(typeof lenis !== 'undefined') {
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(function(time){ lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+  }
 
-// Image Parallax (Cipher style)
-document.querySelectorAll('.proj-img').forEach(function(container) {
-    var img = container.querySelector('img');
-    if(img) {
-        img.style.transform = 'scale(1.2)'; // Allow room for parallax
-        gsap.fromTo(img, 
-            { yPercent: -15 },
-            { yPercent: 15, ease: "none", scrollTrigger: { trigger: container, scrub: true } }
-        );
-    }
-});
+  ScrollTrigger.refresh();
 
-// Staggered Text Reveals
-document.querySelectorAll('.about-txt, .sec-lbl, .foot-hl').forEach(function(el) {
-    gsap.to(el.querySelectorAll('.gsap-word'), {
-        y: '0%',
-        duration: 1.2,
-        ease: 'power4.out',
-        stagger: 0.02,
-        scrollTrigger: {
-            trigger: el,
-            start: 'top 90%'
-        }
-    });
-});
-
-// Reveal basic items like tiles
-document.querySelectorAll('.tech-tile, .tl-item, .faq-item, .princ').forEach(function(el) {
-    gsap.fromTo(el,
-        { y: 50, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.2, ease: 'power4.out', scrollTrigger: { trigger: el, start: 'top 90%' } }
+  // --- Parallax on project thumbnails ---
+  document.querySelectorAll('.proj-thumb').forEach(function(img) {
+    var parent = img.parentElement;
+    img.style.transformOrigin = 'center center';
+    gsap.fromTo(img,
+      { yPercent: -12, scale: 1.25 },
+      { yPercent: 12, scale: 1.25, ease: 'none',
+        scrollTrigger: { trigger: parent, scrub: 1 }
+      }
     );
-});
+  });
 
-// Marquee Velocity Sync
-var mqTrack = document.getElementById('detailsTrack');
-if(mqTrack) {
-    var mqTween = gsap.to(mqTrack, { xPercent: -50, repeat: -1, duration: 20, ease: "linear" });
-    var lastScroll = 0, currDir = 1;
-    window.addEventListener('scroll', function() {
-        var st = window.pageYOffset || document.documentElement.scrollTop;
-        var dir = st > lastScroll ? 1 : -1;
-        if(dir !== currDir) {
-            currDir = dir;
-            gsap.to(mqTween, { timeScale: currDir, duration: 0.8, overwrite: true });
+  // --- Staggered section reveal ---
+  document.querySelectorAll('.tech-tile, .tl-item, .faq-item, .princ, .proj-item').forEach(function(el) {
+    gsap.fromTo(el,
+      { y: 50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 92%', once: true }
+      }
+    );
+  });
+
+  // --- About text word reveal ---
+  document.querySelectorAll('.about-txt').forEach(function(el) {
+    var words = el.innerText.split(' ');
+    el.innerHTML = '';
+    words.forEach(function(word) {
+      if(!word.trim()) { el.appendChild(document.createTextNode(' ')); return; }
+      var outer = document.createElement('span');
+      outer.style.cssText = 'overflow:hidden;display:inline-block;vertical-align:top';
+      var inner = document.createElement('span');
+      inner.innerText = word + '\u00a0';
+      inner.style.cssText = 'display:inline-block;will-change:transform';
+      outer.appendChild(inner);
+      el.appendChild(outer);
+      gsap.fromTo(inner,
+        { y: '105%' },
+        { y: '0%', duration: 1, ease: 'power4.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true }
         }
-        lastScroll = st;
+      );
     });
-}
+  });
+
+  // --- Footer headline reveal ---
+  var footHl = document.querySelector('.foot-hl');
+  if(footHl) {
+    gsap.fromTo(footHl,
+      { y: 60, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1.2, ease: 'power4.out',
+        scrollTrigger: { trigger: footHl, start: 'top 85%', once: true }
+      }
+    );
+  }
+
+  // --- Velocity-linked marquee ---
+  var lastY = 0, tScale = 1;
+  lenis && lenis.on('scroll', function(e) {
+    var dir = e.velocity > 0 ? 1 : -1;
+    if(dir !== tScale) {
+      tScale = dir;
+    }
+  });
+};
 
 
 /* SCROLL */
@@ -768,12 +778,8 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
     });
     lenis.stop();
     lenis.scrollTo(0, {immediate: true});
-    // Sync GSAP and Lenis
-    lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add((time)=>{
-      lenis.raf(time * 1000);
-    });
-    gsap.ticker.lagSmoothing(0);
+    // RAF loop - will be taken over by GSAP ticker after boot
+    (function raf(time) { lenis.raf(time); requestAnimationFrame(raf); })(0);
   }
 </script>
 </body>
