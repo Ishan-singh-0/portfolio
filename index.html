@@ -476,6 +476,10 @@ footer{padding:clamp(4rem,8vw,7rem) clamp(1.5rem,5vw,4rem)}
 </button>
 
 <script>
+/* SCROLL RESTORATION */
+if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+window.scrollTo(0, 0);
+
 var DATA={
   marquee:["UI/UX DESIGN","FRONTEND ENGINEERING","SYSTEM ARCHITECTURE","CREATIVE DEVELOPMENT","WEBGL INTERFACES","FULL STACK"],
   details:[["100% Custom Architectures","Zero templates used"],["Powerstik CRM","Data entry minimization"],["Seamless AI Integrations","Beyond basic API wrappers"],["Private Client","CA Client Portal"],["Full Stack Execution","Front to back"]],
