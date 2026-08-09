@@ -434,4 +434,55 @@ footer{padding:clamp(4rem,8vw,7rem) clamp(1.5rem,5vw,4rem)}
 .cmd-item-label{font-weight:500}
 .cmd-item-sub{font-family:var(--mono);font-size:.65rem;color:var(--fg3);margin-left:auto;letter-spacing:.08em}
 .cmd-footer{padding:.6rem 1.2rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--fg3)}
-.cmd-footer kbd{padding:.15rem .35rem;border:1px solid var(--border);border-radius:2px}
+.cmd-footer kbd{padding:.15rem .35rem;border:1px solid var(--border);border-radius:2px}
+
+/* ===== 10 PREMIUM FEATURES ===== */
+
+/* 1. Ambient Background Glow */
+#ambientGlow { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; pointer-events: none; opacity: 0.6; mix-blend-mode: screen; }
+
+/* 2. Magnetic Spring Physics */
+.magnetic { display: inline-block; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
+
+/* 3. Scroll Velocity Skew */
+.scroll-skew { will-change: transform; transition: transform 0.1s linear; }
+
+/* 5. Focus Mode Spotlight */
+#focusMask {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 9900; opacity: 0;
+  transition: opacity 0.5s;
+  background: radial-gradient(circle 400px at var(--mouse-x, 50%) var(--mouse-y, 50%), transparent 0%, rgba(0,0,0,0.85) 100%);
+}
+body.focus-active #focusMask { opacity: 1; }
+
+/* 7. Micro-Reading Progress Bar */
+#readingProgress { position: fixed; top: 0; left: 0; width: 0%; height: 2px; background: var(--fg); z-index: 9999; transform-origin: left; will-change: width; transition: width 0.1s linear; }
+
+/* 8. Copy Toast Microinteraction */
+.copy-toast {
+  position: fixed; background: var(--fg); color: var(--bg); font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em;
+  padding: 0.4rem 0.8rem; border-radius: 4px; pointer-events: none; z-index: 10000;
+  transform: translate(-50%, -20px); opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.copy-toast.show { transform: translate(-50%, -40px); opacity: 1; }
+
+/* 9. Idle Breathing State */
+@keyframes idleBreathe {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
+  50% { opacity: 0.7; filter: drop-shadow(0 0 8px rgba(255,255,255,0.3)); }
+}
+body.idle-state .btn-p, body.idle-state .hero-hl-dim { animation: idleBreathe 4s ease-in-out infinite; }
+
+/* 10. Custom Context Menu */
+#customContextMenu {
+  position: fixed; background: rgba(15, 15, 15, 0.7); backdrop-filter: blur(12px); border: 1px solid var(--borderH);
+  width: 220px; border-radius: 8px; padding: 0.4rem; z-index: 10001; opacity: 0; pointer-events: none;
+  transform: scale(0.95); transform-origin: top left; transition: opacity 0.15s, transform 0.15s;
+}
+#customContextMenu.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+.ctx-item {
+  padding: 0.6rem 0.8rem; font-family: var(--font); font-size: 0.85rem; color: var(--fg2);
+  border-radius: 4px; cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.ctx-item:hover { background: rgba(255,255,255,0.1); color: var(--fg); }

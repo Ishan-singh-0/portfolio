@@ -1223,4 +1223,201 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
   }
   draw();
 })();
+
+/* ===== 1. AMBIENT BACKGROUND GLOW ===== */
+(function(){
+  var canvas = document.getElementById('ambientGlow');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W, H;
+  var orbs = [
+    {x: 0.2, y: 0.2, r: 0.6, vx: 0.001, vy: 0.0015, color: 'rgba(255, 255, 255, 0.03)'},
+    {x: 0.8, y: 0.8, r: 0.7, vx: -0.0012, vy: -0.0008, color: 'rgba(120, 120, 120, 0.02)'},
+    {x: 0.5, y: 0.5, r: 0.5, vx: 0.0008, vy: -0.001, color: 'rgba(200, 200, 200, 0.015)'}
+  ];
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    var scrollY = window.scrollY || 0;
+    orbs.forEach(function(o) {
+      o.x += o.vx; o.y += o.vy;
+      if (o.x < 0 || o.x > 1) o.vx *= -1;
+      if (o.y < 0 || o.y > 1) o.vy *= -1;
+      var px = o.x * W;
+      var py = (o.y * H) - (scrollY * 0.1); // subtle parallax
+      
+      var grd = ctx.createRadialGradient(px, py, 0, px, py, o.r * Math.max(W, H));
+      grd.addColorStop(0, o.color);
+      grd.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, W, H);
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ===== 2. MAGNETIC SPRING PHYSICS ===== */
+(function(){
+  var magnets = document.querySelectorAll('.magnetic');
+  magnets.forEach(function(el) {
+    el.addEventListener('mousemove', function(e) {
+      var rect = el.getBoundingClientRect();
+      var x = e.clientX - rect.left - rect.width / 2;
+      var y = e.clientY - rect.top - rect.height / 2;
+      el.style.transform = 'translate(' + (x * 0.3) + 'px, ' + (y * 0.3) + 'px)';
+    });
+    el.addEventListener('mouseleave', function() {
+      el.style.transform = 'translate(0px, 0px)';
+    });
+  });
+})();
+
+/* ===== 3. SCROLL VELOCITY SKEW ===== */
+/* ===== 6. PARALLAX DEPTH LAYERS ===== */
+/* ===== 7. MICRO-READING PROGRESS BAR ===== */
+(function(){
+  var skews = document.querySelectorAll('.hero-name, .proj-card, .sec-lbl, .tech-grid');
+  var prog = document.getElementById('readingProgress');
+  skews.forEach(function(el) { el.classList.add('scroll-skew'); });
+  var lastY = window.scrollY;
+  
+  window.addEventListener('scroll', function() {
+    var y = window.scrollY;
+    var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    
+    // Progress Bar (7)
+    if (prog) prog.style.width = (y / maxScroll * 100) + '%';
+    
+    // Velocity Skew (3) & Parallax (6)
+    var dy = y - lastY;
+    var skew = Math.max(-3, Math.min(3, dy * 0.05)); // clamp skew
+    skews.forEach(function(el) {
+      el.style.transform = 'skewY(' + skew + 'deg)';
+      clearTimeout(el.skewTimer);
+      el.skewTimer = setTimeout(function() { el.style.transform = 'skewY(0deg)'; }, 150);
+    });
+    lastY = y;
+  }, {passive: true});
+})();
+
+/* ===== 4. TIME-BASED DYNAMIC GREETING ===== */
+(function(){
+  var gt = document.getElementById('timeGreeting');
+  if (gt) {
+    var hour = new Date().getHours();
+    var msg = "Good evening";
+    if (hour < 12) msg = "Good morning";
+    else if (hour < 17) msg = "Good afternoon";
+    gt.textContent = msg + ", I'm Ishan.";
+  }
+})();
+
+/* ===== 5. FOCUS MODE SPOTLIGHT ===== */
+(function(){
+  var focusActive = false;
+  window.addEventListener('keydown', function(e) {
+    if (e.key.toLowerCase() === 'f' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+      focusActive = !focusActive;
+      document.body.classList.toggle('focus-active', focusActive);
+      if (focusActive && window.uiBeep) window.uiBeep(900, 0.1, 0.1);
+    }
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (focusActive) {
+      document.body.style.setProperty('--mouse-x', e.clientX + 'px');
+      document.body.style.setProperty('--mouse-y', e.clientY + 'px');
+    }
+  }, {passive: true});
+})();
+
+/* ===== 8. COPY TOAST MICROINTERACTION ===== */
+(function(){
+  var links = document.querySelectorAll('[data-copy]');
+  links.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var txt = link.getAttribute('data-copy');
+      navigator.clipboard.writeText(txt);
+      
+      var toast = document.createElement('div');
+      toast.className = 'copy-toast';
+      toast.textContent = 'Copied to clipboard';
+      toast.style.left = e.clientX + 'px';
+      toast.style.top = e.clientY + 'px';
+      document.body.appendChild(toast);
+      
+      // trigger reflow
+      void toast.offsetWidth;
+      toast.classList.add('show');
+      
+      if (window.uiBeep) window.uiBeep(1200, 0.05, 0.1);
+      
+      setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { toast.remove(); }, 300);
+      }, 1500);
+    });
+  });
+})();
+
+/* ===== 9. IDLE STATE BREATHING ===== */
+(function(){
+  var idleTimer;
+  function resetIdle() {
+    document.body.classList.remove('idle-state');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function() {
+      document.body.classList.add('idle-state');
+    }, 15000); // 15 seconds
+  }
+  window.addEventListener('mousemove', resetIdle, {passive: true});
+  window.addEventListener('scroll', resetIdle, {passive: true});
+  window.addEventListener('keydown', resetIdle, {passive: true});
+  resetIdle();
+})();
+
+/* ===== 10. CUSTOM CONTEXT MENU ===== */
+(function(){
+  var ctxMenu = document.getElementById('customContextMenu');
+  if (!ctxMenu) return;
+  
+  window.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    ctxMenu.classList.add('active');
+    
+    // Boundary check
+    var x = e.clientX;
+    var y = e.clientY;
+    if (x + 220 > window.innerWidth) x -= 220;
+    if (y + 150 > window.innerHeight) y -= 150;
+    
+    ctxMenu.style.left = x + 'px';
+    ctxMenu.style.top = y + 'px';
+  });
+  
+  window.addEventListener('click', function(e) {
+    if (!ctxMenu.contains(e.target)) {
+      ctxMenu.classList.remove('active');
+    }
+  });
+  
+  var items = ctxMenu.querySelectorAll('.ctx-item');
+  items.forEach(function(item) {
+    item.addEventListener('click', function() {
+      var act = item.getAttribute('data-action');
+      if (act === 'copy') {
+        navigator.clipboard.writeText(window.location.href);
+      } else if (act === 'contact') {
+        window.open('mailto:isishan100@gmail.com');
+      } else if (act === 'print') {
+        window.print();
+      }
+      ctxMenu.classList.remove('active');
+    });
+  });
+})();
 

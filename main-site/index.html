@@ -17,6 +17,19 @@
 </head>
 <body class="locked">
 
+<!-- AMBIENT BACKGROUND GLOW -->
+<canvas id="ambientGlow"></canvas>
+<!-- READING PROGRESS BAR -->
+<div id="readingProgress"></div>
+<!-- FOCUS MODE MASK -->
+<div id="focusMask"></div>
+<!-- CUSTOM CONTEXT MENU -->
+<div id="customContextMenu">
+  <div class="ctx-item" data-action="copy">Copy Link to Portfolio</div>
+  <div class="ctx-item" data-action="contact">Email Me</div>
+  <div class="ctx-item" data-action="print">Print Resume</div>
+</div>
+
 <div id="flashlight"></div>
 
 <!-- Ambient Background -->
@@ -88,6 +101,7 @@
   </div>
   <div class="hero-content">
     <div class="hero-name reveal">Ishan<br><span class="out">Singh</span></div>
+    <p class="hero-sub reveal" id="timeGreeting" style="margin-top: -1rem; margin-bottom: 1rem; color: var(--fg2); font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.1em;"></p>
     <div class="hero-bottom">
       <p class="hero-desc reveal">Full-stack developer based in New Delhi. I design and build software that works.</p>
       <div class="hero-acts reveal">
@@ -226,9 +240,9 @@
     <div class="contact-info">
       <p class="contact-sub">Got a project in mind? I'd love to hear about it.</p>
       <div class="contact-links">
-        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=isishan100@gmail.com" target="_blank" class="contact-link">isishan100@gmail.com &nearr;</a>
-        <a href="https://www.linkedin.com/in/ishan-singh28/" target="_blank" class="contact-link">LinkedIn &nearr;</a>
-        <a href="https://github.com/Ishan-singh-0" target="_blank" class="contact-link">GitHub &nearr;</a>
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=isishan100@gmail.com" target="_blank" class="contact-link magnetic" data-copy="isishan100@gmail.com">isishan100@gmail.com &nearr;</a>
+        <a href="https://www.linkedin.com/in/ishan-singh28/" target="_blank" class="contact-link magnetic">LinkedIn &nearr;</a>
+        <a href="https://github.com/Ishan-singh-0" target="_blank" class="contact-link magnetic">GitHub &nearr;</a>
       </div>
     </div>
     <form class="contact-form" id="contactForm" novalidate>
