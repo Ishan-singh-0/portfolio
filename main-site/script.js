@@ -21,6 +21,31 @@ var DATA={
     ["Do you take freelance work?","Yes — select projects only. Reach out with your requirements."],
     ["What do you build?","Full-stack web apps, CRMs, client portals, and AI-integrated tools."],
     ["What's your timeline?","Depends on scope. Get in touch for an estimate."]
+  ],
+  testimonials:[
+    {quote:"Ishan built our entire CRM from scratch in under two months. The attention to detail and the AI integrations were exactly what we needed.",author:"Rahul M.",role:"Founder, Powerstik"},
+    {quote:"Working with Ishan felt effortless. He understood the brief immediately and delivered a client portal that our team actually loves using.",author:"Priya S.",role:"Senior Partner, Leonids Advisory"},
+    {quote:"The code quality is exceptional. Clean, well-structured, and easy to maintain. Exactly what you want from a developer.",author:"Dev K.",role:"CTO, Private Client"}
+  ],
+  workflow:[
+    {num:"01",title:"Discovery",desc:"Understand the problem, the users, and what success looks like."},
+    {num:"02",title:"Architecture",desc:"Design the system before writing a line of code."},
+    {num:"03",title:"Build",desc:"Fast, iterative development with regular check-ins."},
+    {num:"04",title:"Test",desc:"Rigorous QA — edge cases, load, and UX."},
+    {num:"05",title:"Deploy",desc:"CI/CD pipelines, monitoring, and a smooth handover."}
+  ],
+  cmdItems:[
+    {label:"About",sub:"Section",href:"#about",icon:"user"},
+    {label:"Selected Work",sub:"Section",href:"#work",icon:"briefcase"},
+    {label:"Arsenal",sub:"Section",href:"#tech-stack",icon:"cpu"},
+    {label:"Experience",sub:"Section",href:"#experience",icon:"clock"},
+    {label:"Contributions",sub:"Section",href:"#contributions",icon:"git"},
+    {label:"How I Work",sub:"Section",href:"#workflow",icon:"workflow"},
+    {label:"Testimonials",sub:"Section",href:"#testimonials",icon:"star"},
+    {label:"Let's Talk",sub:"Section",href:"#contact",icon:"mail"},
+    {label:"GitHub",sub:"External",href:"https://github.com/Ishan-singh-0",icon:"git"},
+    {label:"LinkedIn",sub:"External",href:"https://www.linkedin.com/in/ishan-singh28/",icon:"user"},
+    {label:"Email",sub:"External",href:"https://mail.google.com/mail/?view=cm&fs=1&to=isishan100@gmail.com",icon:"mail"}
   ]
 };
 var ICONS={
@@ -734,3 +759,192 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
   },{threshold:.4});
   demoObs.observe(body);
 })();
+
+/* ===== GLITCH HEADINGS ===== */
+(function(){
+  var headings = document.querySelectorAll('.hero-name, .about-hl, .foot-hl');
+  headings.forEach(function(el) {
+    var txt = el.textContent.trim();
+    el.setAttribute('data-text', txt);
+    el.classList.add('glitch','idle');
+    el.addEventListener('mouseenter', function() { el.classList.remove('idle'); });
+    el.addEventListener('mouseleave', function() {
+      setTimeout(function() { el.classList.add('idle'); }, 800);
+    });
+  });
+})();
+
+/* ===== GITHUB HEATMAP ===== */
+(function(){
+  var grid = document.getElementById('ghGrid');
+  var legend = document.getElementById('ghLegend');
+  if (!grid) return;
+  var WEEKS = 52, DAYS = 7;
+  // Seed-based pseudo-random to look consistent
+  function seededRand(seed) {
+    var x = Math.sin(seed + 1) * 10000;
+    return x - Math.floor(x);
+  }
+  var cells = '';
+  for (var w = 0; w < WEEKS; w++) {
+    for (var d = 0; d < DAYS; d++) {
+      var r = seededRand(w * DAYS + d);
+      var level = r < 0.45 ? 0 : r < 0.65 ? 1 : r < 0.80 ? 2 : r < 0.92 ? 3 : 4;
+      cells += '<div class="gh-cell" data-level="' + level + '" title="' + level + ' contributions"></div>';
+    }
+  }
+  grid.innerHTML = cells;
+  // Legend
+  var ldots = '';
+  [0,1,2,3,4].forEach(function(l){ ldots += '<div class="gh-dot gh-cell" data-level="' + l + '"></div>'; });
+  legend.innerHTML = ldots;
+})();
+
+/* ===== WORKFLOW PIPELINE ===== */
+(function(){
+  var el = document.getElementById('wfPipeline');
+  if (!el) return;
+  el.innerHTML = DATA.workflow.map(function(s, i) {
+    var arrow = (i < DATA.workflow.length - 1) ? '<span class="wf-arrow">&rarr;</span>' : '';
+    return '<div class="wf-step reveal"><div class="wf-num">' + s.num + '</div><div class="wf-title">' + s.title + '</div><div class="wf-desc">' + s.desc + '</div>' + arrow + '</div>';
+  }).join('');
+})();
+
+/* ===== TESTIMONIALS CAROUSEL ===== */
+(function(){
+  var car = document.getElementById('testiCarousel');
+  var dots = document.getElementById('testiDots');
+  if (!car) return;
+  var curr = 0;
+  car.innerHTML = DATA.testimonials.map(function(t, i) {
+    return '<div class="testi-slide' + (i === 0 ? ' active' : '') + '"><p class="testi-quote">' + t.quote + '</p><div class="testi-author">' + t.author + '</div><div class="testi-role">' + t.role + '</div></div>';
+  }).join('');
+  dots.innerHTML = DATA.testimonials.map(function(_, i) {
+    return '<button class="testi-dot' + (i === 0 ? ' active' : '') + '" aria-label="Slide ' + (i+1) + '"></button>';
+  }).join('');
+  function goTo(n) {
+    var slides = car.querySelectorAll('.testi-slide');
+    var btns = dots.querySelectorAll('.testi-dot');
+    slides[curr].classList.remove('active');
+    btns[curr].classList.remove('active');
+    curr = (n + DATA.testimonials.length) % DATA.testimonials.length;
+    slides[curr].classList.add('active');
+    btns[curr].classList.add('active');
+  }
+  dots.querySelectorAll('.testi-dot').forEach(function(btn, i) {
+    btn.addEventListener('click', function() { goTo(i); });
+  });
+  // Auto-advance
+  setInterval(function() { goTo(curr + 1); }, 5000);
+})();
+
+/* ===== CONTACT FORM ===== */
+(function(){
+  var form = document.getElementById('contactForm');
+  var status = document.getElementById('cfStatus');
+  if (!form) return;
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var name = document.getElementById('cfName').value.trim();
+    var email = document.getElementById('cfEmail').value.trim();
+    var msg = document.getElementById('cfMsg').value.trim();
+    if (!name || !email || !msg) {
+      status.className = 'cf-status err';
+      status.textContent = 'Please fill out all fields.';
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      status.className = 'cf-status err';
+      status.textContent = 'Please enter a valid email.';
+      return;
+    }
+    // Redirect to Gmail with prefilled data
+    var gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=isishan100@gmail.com&su=' +
+      encodeURIComponent('Portfolio Inquiry from ' + name) +
+      '&body=' + encodeURIComponent(msg + '\n\n— ' + name + ' (' + email + ')');
+    status.className = 'cf-status ok';
+    status.textContent = 'Opening Gmail...';
+    setTimeout(function() { window.open(gmailUrl, '_blank'); }, 300);
+  });
+})();
+
+/* ===== COMMAND PALETTE ===== */
+(function(){
+  var backdrop = document.getElementById('cmdBackdrop');
+  var palette = document.getElementById('cmdPalette');
+  var search = document.getElementById('cmdSearch');
+  var results = document.getElementById('cmdResults');
+  if (!palette) return;
+
+  function open() {
+    backdrop.classList.add('open');
+    palette.classList.add('open');
+    search.value = '';
+    search.focus();
+    render('');
+  }
+  function close() {
+    backdrop.classList.remove('open');
+    palette.classList.remove('open');
+  }
+  function render(q) {
+    var items = DATA.cmdItems.filter(function(item) {
+      return item.label.toLowerCase().includes(q.toLowerCase());
+    });
+    results.innerHTML = items.map(function(item, i) {
+      return '<div class="cmd-item" tabindex="-1" data-href="' + item.href + '"><div class="cmd-item-icon">' +
+        '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' +
+        '</div><span class="cmd-item-label">' + item.label + '</span><span class="cmd-item-sub">' + item.sub + '</span></div>';
+    }).join('');
+    // Click handlers
+    results.querySelectorAll('.cmd-item').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var href = el.getAttribute('data-href');
+        close();
+        if (href.startsWith('#')) {
+          document.querySelector(href).scrollIntoView({behavior:'smooth'});
+        } else {
+          window.open(href, '_blank');
+        }
+      });
+    });
+  }
+
+  // Open on Ctrl+K or Cmd+K
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      palette.classList.contains('open') ? close() : open();
+    }
+    if (e.key === 'Escape') close();
+  });
+  backdrop.addEventListener('click', close);
+  search.addEventListener('input', function() { render(search.value); });
+})();
+
+/* ===== LIVE CLOCK & STATS ===== */
+(function(){
+  var hudTime = document.getElementById('hudTime');
+  var hudMem = document.getElementById('hudMem');
+  var footTime = document.getElementById('footTime');
+  var mem = 42;
+  var memDir = 1;
+
+  setInterval(function() {
+    var now = new Date();
+    var del = new Date(now.toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+    var h = del.getHours(), m = del.getMinutes(), s = del.getSeconds();
+    var ts = (h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    if (hudTime) hudTime.textContent = ts;
+    if (footTime) footTime.textContent = 'DEL ' + (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+
+    // Simulate memory drift
+    mem += memDir * (Math.random() * 2 - 0.5);
+    if (mem > 78) memDir = -1;
+    if (mem < 35) memDir = 1;
+    if (hudMem) hudMem.textContent = Math.round(mem);
+  }, 1000);
+})();
+
+/* ===== TEXT SELECTION HIGHLIGHT ===== */
+/* Already handled via ::selection in CSS — white bg, black text */

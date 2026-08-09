@@ -188,6 +188,60 @@
   <div class="faq-list" id="faqList"></div>
 </section>
 
+<!-- GITHUB HEATMAP -->
+<section class="cs" id="contributions">
+  <div class="sec-lbl reveal"><span class="sn">06 &mdash;</span><div class="sd"></div><span class="st">Contributions</span></div>
+  <div class="gh-wrap reveal">
+    <div class="gh-label">github.com/Ishan-singh-0 &mdash; last 52 weeks</div>
+    <div class="gh-grid" id="ghGrid"></div>
+    <div class="gh-legend"><span>Less</span><div class="gh-dots" id="ghLegend"></div><span>More</span></div>
+  </div>
+</section>
+
+<!-- WORKFLOW -->
+<section class="cs" id="workflow">
+  <div class="sec-lbl reveal"><span class="sn">07 &mdash;</span><div class="sd"></div><span class="st">How I Work</span></div>
+  <div class="wf-pipeline" id="wfPipeline"></div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="cs" id="testimonials">
+  <div class="sec-lbl reveal"><span class="sn">08 &mdash;</span><div class="sd"></div><span class="st">Testimonials</span></div>
+  <div class="testi-carousel" id="testiCarousel"></div>
+  <div class="testi-dots" id="testiDots"></div>
+</section>
+
+<!-- CONTACT FORM -->
+<section class="cs" id="contact">
+  <div class="sec-lbl reveal"><span class="sn">09 &mdash;</span><div class="sd"></div><span class="st">Let's Talk</span></div>
+  <div class="contact-grid reveal">
+    <div class="contact-info">
+      <p class="contact-sub">Got a project in mind? I'd love to hear about it.</p>
+      <div class="contact-links">
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=isishan100@gmail.com" target="_blank" class="contact-link">isishan100@gmail.com &nearr;</a>
+        <a href="https://www.linkedin.com/in/ishan-singh28/" target="_blank" class="contact-link">LinkedIn &nearr;</a>
+        <a href="https://github.com/Ishan-singh-0" target="_blank" class="contact-link">GitHub &nearr;</a>
+      </div>
+    </div>
+    <form class="contact-form" id="contactForm" novalidate>
+      <div class="cf-group">
+        <input type="text" id="cfName" placeholder="Your name" autocomplete="off" required />
+        <label for="cfName">Name</label>
+      </div>
+      <div class="cf-group">
+        <input type="email" id="cfEmail" placeholder="Your email" autocomplete="off" required />
+        <label for="cfEmail">Email</label>
+      </div>
+      <div class="cf-group">
+        <textarea id="cfMsg" placeholder="What are you building?" rows="4" required></textarea>
+        <label for="cfMsg">Message</label>
+      </div>
+      <button type="submit" class="btn-p magnetic" id="cfSubmit">Send Message <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <div class="cf-status" id="cfStatus"></div>
+    </form>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="foot-top">
@@ -209,6 +263,18 @@
 </footer>
 </main>
 
+<!-- COMMAND PALETTE -->
+<div class="cmd-backdrop" id="cmdBackdrop"></div>
+<div class="cmd-palette" id="cmdPalette" role="dialog" aria-label="Command palette">
+  <div class="cmd-search-wrap">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="cmdSearch" placeholder="Search sections, projects..." autocomplete="off" spellcheck="false" />
+    <kbd>ESC</kbd>
+  </div>
+  <div class="cmd-results" id="cmdResults"></div>
+  <div class="cmd-footer"><kbd>&uarr;</kbd><kbd>&darr;</kbd> navigate &nbsp;&nbsp; <kbd>Enter</kbd> go &nbsp;&nbsp; <kbd>Esc</kbd> close</div>
+</div>
+
 <button class="btt magnetic" id="btt" aria-label="Back to top">
   <svg class="btt-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20"/><circle class="prog-fill" cx="22" cy="22" r="20"/></svg>
   <div class="btt-inner">
@@ -216,18 +282,8 @@
   </div>
 </button>
 
-<script src="script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-<script src="script.js"></script>
-
-<script src="script.js"></script>
-
-
-<script src="script.js"></script>
-
-
 <script src="script.js"></script>
 
 </body>
