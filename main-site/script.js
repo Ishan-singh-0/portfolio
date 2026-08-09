@@ -1132,7 +1132,7 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
   // Accumulated rotation (applied each frame from velocity)
   var velX = 0.0008, velY = 0.0015; // slow auto-spin
   var isDragging = false, lastMX = 0, lastMY = 0;
-  var DAMPING = 0.92; // friction — velocity decays each frame
+  var DAMPING = 0.94;
 
   canvas.addEventListener('mousedown', function(e) {
     isDragging = true;
@@ -1144,9 +1144,8 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
     if (!isDragging) return;
     var dx = e.clientX - lastMX;
     var dy = e.clientY - lastMY;
-    // Very gentle sensitivity — 0.0003 instead of 0.005
-    velY = dx * 0.0003;
-    velX = dy * 0.0003;
+    velY = dx * 0.0015;
+    velX = dy * 0.0015;
     lastMX = e.clientX; lastMY = e.clientY;
   });
 
