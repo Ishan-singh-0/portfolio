@@ -117,6 +117,23 @@ a{color:inherit;text-decoration:none}
 .proj-item {
   transform-style: preserve-3d;
 }
+
+/* MATRIX MODE EASTER EGG */
+body.matrix-mode {
+  --bg: #000;
+  --fg: #0f0;
+  --fg2: #090;
+  --p: #0f0;
+}
+body.matrix-mode * {
+  color: #0f0 !important;
+  text-shadow: 0 0 5px #0f0;
+  border-color: #0f0 !important;
+}
+body.matrix-mode .noise-overlay {
+  background: repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.1) 0, rgba(0, 255, 0, 0.1) 1px, transparent 1px, transparent 2px);
+  opacity: 0.3;
+}
 .boot-left .boot-letter{color:#fff;padding-right:.04em;}
 .boot-right .boot-letter{
   -webkit-text-stroke:2px rgba(255,255,255,.35);

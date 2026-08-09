@@ -641,7 +641,7 @@ sRo.observe(sEl);
 /* FAQ */
 document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");if(!b)return;var it=b.closest(".faq-item"),open=it.classList.contains("open");document.querySelectorAll(".faq-item.open").forEach(function(o){o.classList.remove("open");});if(!open)it.classList.add("open");});
 
-/* TERMINAL */
+/* TERMINAL 2.0 */
 (function(){
   var inp=document.getElementById("term-input"),body=document.getElementById("termBody");
   if(!inp||!body)return;
@@ -651,21 +651,68 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
     about:"Ishan Singh — Full-stack developer, New Delhi.\nI build CRMs, portals, and internal tools.",
     contact:"Email    → isishan100@gmail.com\nGitHub   → github.com/Ishan-singh-0\nLinkedIn → linkedin.com/in/ishan-singh28",
     skills:"Frontend  → React, Next.js, Vanilla JS\nBackend   → Node.js, Python, Express\nDatabase  → PostgreSQL, MongoDB\nOther     → AI integrations, Git",
-    clear:"__clear__"
+    clear:"__clear__",
+    matrix:"__matrix__",
+    sudo:"__sudo__"
   };
+  var cmdList = Object.keys(CMDS);
+  var history = [];
+  var histPos = 0;
+
   function addCmd(v){var li=body.querySelector(".term-iline");var w=document.createElement("div");w.className="cmd";w.innerHTML='<span class="p">$</span><span> '+v+'</span>';body.insertBefore(w,li);}
+  
   function addOut(v){
     if(v==="__clear__"){Array.from(body.children).forEach(function(c){if(!c.classList.contains("term-iline"))c.remove();});body.scrollTop=0;return;}
-    var o=document.createElement("div");o.className="out";o.style.marginBottom=".9rem";o.style.whiteSpace="pre-wrap";o.textContent=v;body.insertBefore(o,body.querySelector(".term-iline"));body.scrollTop=body.scrollHeight;
+    if(v==="__matrix__"){ document.body.classList.toggle('matrix-mode'); return; }
+    if(v==="__sudo__"){ alert("Sudo mode unlocked."); document.body.style.setProperty('--bg', '#000000'); document.body.style.setProperty('--fg', '#00ff00'); document.body.style.setProperty('--p', '#00ff00'); return; }
+
+    var o=document.createElement("div");o.className="out";o.style.marginBottom=".9rem";o.style.whiteSpace="pre-wrap";
+    body.insertBefore(o,body.querySelector(".term-iline"));
+    
+    // Typewriter effect
+    var i = 0;
+    var iv = setInterval(function() {
+      o.textContent += v.charAt(i);
+      i++;
+      body.scrollTop=body.scrollHeight;
+      if (i >= v.length) clearInterval(iv);
+    }, 15); // 15ms per char
   }
+  
   function runCmd(v){
     v=v.trim().toLowerCase();
     if(!v)return;
+    history.push(v);
+    histPos = history.length;
     addCmd(v);
     addOut(CMDS[v]||'Unknown command: "'+v+'". Type help to see all commands.');
   }
-  inp.addEventListener("keydown",function(e){if(e.key!=="Enter")return;var v=inp.value;inp.value="";runCmd(v);});
+
+  inp.addEventListener("keydown",function(e){
+    // History
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (histPos > 0) { histPos--; inp.value = history[histPos]; }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (histPos < history.length - 1) { histPos++; inp.value = history[histPos]; }
+      else { histPos = history.length; inp.value = ""; }
+    }
+    // Autocomplete
+    else if (e.key === "Tab") {
+      e.preventDefault();
+      var val = inp.value.toLowerCase();
+      var match = cmdList.find(c => c.startsWith(val));
+      if (match) inp.value = match;
+    }
+    // Run
+    else if (e.key === "Enter") {
+      var v=inp.value;inp.value="";runCmd(v);
+    }
+  });
+
   body.addEventListener("click",function(e){if(e.target!==inp)inp.focus();});
+  
   /* chip buttons */
   document.querySelectorAll(".term-chip").forEach(function(btn){
     btn.addEventListener("click",function(){
@@ -673,7 +720,8 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
       runCmd(btn.dataset.cmd);
     });
   });
-  /* auto-demo: run whoami on scroll into view, once */
+  
+  /* auto-demo: run about on scroll into view, once */
   var demoDone=false;
   var demoObs=new IntersectionObserver(function(es){
     if(demoDone)return;
