@@ -805,10 +805,12 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
   var el = document.getElementById('wfPipeline');
   if (!el) return;
   el.innerHTML = DATA.workflow.map(function(s, i) {
-    var arrow = (i < DATA.workflow.length - 1) ? '<span class="wf-arrow">&rarr;</span>' : '';
-    return '<div class="wf-step" style="opacity:0;transform:translateY(20px);transition:opacity .6s ' + (i * 0.12) + 's,transform .6s ' + (i * 0.12) + 's"><div class="wf-num">' + s.num + '</div><div class="wf-title">' + s.title + '</div><div class="wf-desc">' + s.desc + '</div>' + arrow + '</div>';
+    return '<div class="wf-step" style="opacity:0;transform:translateY(16px);transition:opacity .55s ' + (i * 0.1) + 's ease,transform .55s ' + (i * 0.1) + 's ease">' +
+      '<div class="wf-left"><div class="wf-num">' + s.num + '</div><div class="wf-title">' + s.title + '</div></div>' +
+      '<div class="wf-desc">' + s.desc + '</div>' +
+      '</div>';
   }).join('');
-  // Observe parent section, animate steps in when visible
+  // Animate steps in when visible
   var steps = el.querySelectorAll('.wf-step');
   var obs = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
@@ -817,7 +819,7 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
         obs.disconnect();
       }
     });
-  }, {threshold: 0.2});
+  }, {threshold: 0.15});
   obs.observe(el);
 })();
 

@@ -359,10 +359,10 @@ footer{padding:clamp(4rem,8vw,7rem) clamp(1.5rem,5vw,4rem)}
 @keyframes glitch-1{0%,100%{clip-path:inset(0 0 95% 0)}20%{clip-path:inset(30% 0 50% 0)}40%{clip-path:inset(60% 0 20% 0)}60%{clip-path:inset(10% 0 75% 0)}80%{clip-path:inset(80% 0 5% 0)}}
 @keyframes glitch-2{0%,100%{clip-path:inset(90% 0 0 0)}20%{clip-path:inset(50% 0 40% 0)}40%{clip-path:inset(20% 0 70% 0)}60%{clip-path:inset(70% 0 15% 0)}80%{clip-path:inset(5% 0 80% 0)}}
 .glitch{position:relative;display:inline-block}
-.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;background:var(--bg)}
-.glitch::before{left:2px;text-shadow:-1px 0 #ff005c;animation:glitch-1 2s infinite linear alternate-reverse}
-.glitch::after{left:-2px;text-shadow:2px 0 #00d8ff;animation:glitch-2 1.5s infinite linear alternate-reverse}
-.glitch.idle::before,.glitch.idle::after{animation:none;opacity:0}
+.glitch[data-text]::before,.glitch[data-text]::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;background:var(--bg)}
+.glitch[data-text]::before{left:2px;text-shadow:-1px 0 #ff005c;animation:glitch-1 2s infinite linear alternate-reverse}
+.glitch[data-text]::after{left:-2px;text-shadow:2px 0 #00d8ff;animation:glitch-2 1.5s infinite linear alternate-reverse}
+.glitch.idle[data-text]::before,.glitch.idle[data-text]::after{animation:none;opacity:0}
 
 /* ===== GITHUB HEATMAP ===== */
 .gh-wrap{max-width:52rem}
@@ -379,14 +379,15 @@ footer{padding:clamp(4rem,8vw,7rem) clamp(1.5rem,5vw,4rem)}
 .gh-dot{width:10px;height:10px;border-radius:2px}
 
 /* ===== WORKFLOW PIPELINE ===== */
-.wf-pipeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;position:relative}
-.wf-step{padding:2rem 1.5rem;border-left:1px solid var(--border);position:relative}
-.wf-step:first-child{border-left:none}
-.wf-num{font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;color:var(--fg3);margin-bottom:1rem}
-.wf-title{font-size:.9rem;font-weight:600;margin-bottom:.5rem}
-.wf-desc{font-size:.75rem;color:var(--fg2);line-height:1.6}
-.wf-arrow{position:absolute;top:2rem;right:-12px;z-index:1;color:var(--fg3);font-size:.75rem}
-@media(max-width:768px){.wf-pipeline{grid-template-columns:1fr}.wf-step{border-left:none;border-top:1px solid var(--border);padding:1.5rem 0}.wf-step:first-child{border-top:none}.wf-arrow{display:none}}
+.wf-pipeline{display:flex;flex-direction:column;gap:0}
+.wf-step{display:grid;grid-template-columns:120px 1fr;gap:2rem;align-items:start;padding:2.5rem 0;border-top:1px solid var(--border)}
+.wf-step:last-child{border-bottom:1px solid var(--border)}
+.wf-left{display:flex;flex-direction:column;gap:.4rem}
+.wf-num{font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;color:var(--fg3)}
+.wf-title{font-size:1.05rem;font-weight:600;color:var(--fg)}
+.wf-desc{font-size:.875rem;color:var(--fg2);line-height:1.75;max-width:560px}
+.wf-arrow{display:none}
+@media(max-width:600px){.wf-step{grid-template-columns:1fr}.wf-left{flex-direction:row;align-items:center;gap:1rem}}
 
 /* ===== TESTIMONIALS ===== */
 .testi-carousel{position:relative;overflow:hidden;min-height:200px}
