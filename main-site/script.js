@@ -958,4 +958,227 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
 })();
 
 /* ===== TEXT SELECTION HIGHLIGHT ===== */
-/* Already handled via ::selection in CSS — white bg, black text */
+/* Already handled via ::selection in CSS — white bg, black text */
+
+/* ===== PAGE TRANSITION CURTAIN ===== */
+(function(){
+  // Create curtain element
+  var curtain = document.createElement('div');
+  curtain.className = 'page-curtain';
+  curtain.id = 'pageCurtain';
+  document.body.appendChild(curtain);
+
+  // Intercept all external project links for a smooth curtain exit
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    // Only animate outbound links (not anchors or mailto)
+    if (!href || href.startsWith('#') || href.startsWith('mailto') || href.startsWith('https://mail')) return;
+    if (link.target === '_blank') return; // don't intercept new-tab links
+    e.preventDefault();
+    curtain.className = 'page-curtain sweep-in';
+    setTimeout(function() { window.location.href = href; }, 420);
+  });
+})();
+
+/* ===== SOUND DESIGN TOGGLE ===== */
+(function(){
+  var btn = document.getElementById('soundToggle');
+  if (!btn) return;
+  var soundOn = false; // off by default, opt-in
+  var ctx = null;
+
+  function beep(freq, dur, vol) {
+    if (!soundOn) return;
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var o = ctx.createOscillator();
+    var g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq;
+    o.type = 'sine';
+    g.gain.setValueAtTime(vol || 0.04, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(ctx.currentTime);
+    o.stop(ctx.currentTime + dur);
+  }
+
+  // Expose globally for other elements to use
+  window.uiBeep = beep;
+
+  btn.addEventListener('click', function() {
+    soundOn = !soundOn;
+    btn.title = soundOn ? 'Sounds ON' : 'Sounds OFF';
+    var wave = document.getElementById('soundWave');
+    if (wave) wave.style.opacity = soundOn ? '1' : '0.2';
+    btn.style.borderColor = soundOn ? 'rgba(255,255,255,0.4)' : '';
+    btn.style.color = soundOn ? 'var(--fg2)' : '';
+    if (soundOn) beep(880, 0.15, 0.05);
+  });
+
+  // Add hover sounds to magnetic buttons
+  document.querySelectorAll('.magnetic, .btn-p, .btn-s, .nav-cta').forEach(function(el) {
+    el.addEventListener('mouseenter', function() { beep(440, 0.08, 0.03); });
+    el.addEventListener('click', function() { beep(660, 0.12, 0.04); });
+  });
+
+  // Add click sound to terminal chips
+  document.querySelectorAll('.term-chip').forEach(function(el) {
+    el.addEventListener('click', function() { beep(520, 0.1, 0.03); });
+  });
+})();
+
+/* ===== SCROLL IMAGE REVEALS ===== */
+(function(){
+  var thumbs = document.querySelectorAll('.proj-thumb');
+  if (!thumbs.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        setTimeout(function() {
+          entry.target.classList.add('revealed');
+        }, 150);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  thumbs.forEach(function(t) { obs.observe(t); });
+})();
+
+/* ===== DYNAMIC ISLAND / STICKY NAV ===== */
+(function(){
+  var nav = document.querySelector('.snav');
+  if (!nav) return;
+  var lastY = 0;
+  window.addEventListener('scroll', function() {
+    var y = window.scrollY;
+    // Compact on scroll down, expand on scroll up
+    nav.classList.toggle('scrolled', y > 60);
+    lastY = y;
+  }, { passive: true });
+})();
+
+/* ===== MOCK SPOTIFY WIDGET ===== */
+(function(){
+  var spotifyText = document.getElementById('spotifyText');
+  var dot = document.querySelector('.spotify-dot');
+  if (!spotifyText) return;
+
+  var tracks = [
+    'Dark Red — Steve Lacy',
+    'Blinding Lights — The Weeknd',
+    'Pink + White — Frank Ocean',
+    'Redbone — Childish Gambino',
+    'Nights — Frank Ocean',
+    'ivy — Frank Ocean'
+  ];
+
+  // Simulate: starts "not playing", then randomly picks a song
+  setTimeout(function() {
+    var track = tracks[Math.floor(Math.random() * tracks.length)];
+    spotifyText.textContent = track;
+    if (dot) dot.classList.remove('off');
+    // Rotate tracks every 3.5 min (simulated)
+    setInterval(function() {
+      var next = tracks[Math.floor(Math.random() * tracks.length)];
+      spotifyText.style.opacity = '0';
+      setTimeout(function() {
+        spotifyText.textContent = next;
+        spotifyText.style.opacity = '1';
+      }, 400);
+    }, 210000);
+  }, 4000);
+
+  // Style the transition
+  spotifyText.style.transition = 'opacity .4s';
+})();
+
+/* ===== 3D TECH SPHERE ===== */
+(function(){
+  var grid = document.getElementById('techGrid');
+  if (!grid) return;
+
+  var skills = [
+    'React','Next.js','Node.js','Python','PostgreSQL',
+    'MongoDB','TypeScript','Git','Docker','AI/ML',
+    'Express','REST APIs','UI/UX','Canvas API','WebSockets'
+  ];
+
+  // Replace static tiles with 3D orbiting sphere
+  grid.innerHTML = '<div class="sphere-wrap" id="sphereWrap"><canvas id="sphereCanvas"></canvas></div>';
+  grid.style.display = 'block';
+
+  var canvas = document.getElementById('sphereCanvas');
+  var ctx2 = canvas.getContext('2d');
+  var W = grid.offsetWidth || 600;
+  var H = Math.min(W * 0.6, 360);
+  canvas.width = W; canvas.height = H;
+  canvas.style.width = '100%';
+
+  var CX = W / 2, CY = H / 2, R = Math.min(W, H) * 0.36;
+  var tags = skills.map(function(s, i) {
+    var phi = Math.acos(-1 + (2 * i) / skills.length);
+    var theta = Math.sqrt(skills.length * Math.PI) * phi;
+    return {
+      label: s,
+      x: Math.sin(phi) * Math.cos(theta),
+      y: Math.sin(phi) * Math.sin(theta),
+      z: Math.cos(phi)
+    };
+  });
+
+  var rotX = 0.003, rotY = 0.006;
+  var isDragging = false, lastMX = 0, lastMY = 0;
+
+  canvas.addEventListener('mousedown', function(e) { isDragging = true; lastMX = e.clientX; lastMY = e.clientY; });
+  window.addEventListener('mouseup', function() { isDragging = false; });
+  window.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    rotY += (e.clientX - lastMX) * 0.005;
+    rotX += (e.clientY - lastMY) * 0.005;
+    lastMX = e.clientX; lastMY = e.clientY;
+  });
+
+  function rotate(tag) {
+    // Rotate around Y
+    var cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+    var x1 = tag.x * cosY - tag.z * sinY;
+    var z1 = tag.x * sinY + tag.z * cosY;
+    // Rotate around X
+    var cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+    var y1 = tag.y * cosX - z1 * sinX;
+    var z2 = tag.y * sinX + z1 * cosX;
+    return { x: x1, y: y1, z: z2 };
+  }
+
+  function draw() {
+    ctx2.clearRect(0, 0, W, H);
+    var projected = tags.map(function(tag) {
+      var r = rotate(tag);
+      tag.x = r.x; tag.y = r.y; tag.z = r.z;
+      var scale = (r.z + 1.5) / 2.5;
+      return {
+        label: tag.label,
+        px: CX + r.x * R,
+        py: CY + r.y * R,
+        scale: scale,
+        z: r.z
+      };
+    });
+    // Sort back-to-front
+    projected.sort(function(a, b) { return a.z - b.z; });
+    projected.forEach(function(t) {
+      ctx2.save();
+      ctx2.globalAlpha = 0.3 + t.scale * 0.7;
+      ctx2.font = Math.round(9 + t.scale * 5) + 'px "JetBrains Mono", monospace';
+      ctx2.fillStyle = '#ffffff';
+      ctx2.textAlign = 'center';
+      ctx2.textBaseline = 'middle';
+      ctx2.fillText(t.label, t.px, t.py);
+      ctx2.restore();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
