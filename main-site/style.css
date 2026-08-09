@@ -441,8 +441,10 @@ footer{padding:clamp(4rem,8vw,7rem) clamp(1.5rem,5vw,4rem)}
 /* 1. Ambient Background Glow */
 #ambientGlow { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; pointer-events: none; opacity: 0.6; mix-blend-mode: screen; }
 
-/* 2. Magnetic Spring Physics */
-.magnetic { display: inline-block; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
+/* 2. Premium Link Hover (Replaced Magnetic) */
+.contact-link { display: inline-block; position: relative; padding-bottom: 2px; }
+.contact-link::after { content: ''; position: absolute; width: 100%; transform: scaleX(0); height: 1px; bottom: 0; left: 0; background-color: var(--fg); transform-origin: bottom right; transition: transform 0.3s cubic-bezier(0.86, 0, 0.07, 1); }
+.contact-link:hover::after { transform: scaleX(1); transform-origin: bottom left; }
 
 /* 3. Scroll Velocity Skew */
 .scroll-skew { will-change: transform; transition: transform 0.1s linear; }
