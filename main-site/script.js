@@ -1288,17 +1288,6 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
   }, {passive: true});
 })();
 
-/* ===== 4. TIME-BASED DYNAMIC GREETING ===== */
-(function(){
-  var gt = document.getElementById('timeGreeting');
-  if (gt) {
-    var hour = new Date().getHours();
-    var msg = "Good evening";
-    if (hour < 12) msg = "Good morning";
-    else if (hour < 17) msg = "Good afternoon";
-    gt.textContent = msg + ", I'm Ishan.";
-  }
-})();
 
 /* ===== 5. FOCUS MODE SPOTLIGHT ===== */
 (function(){
