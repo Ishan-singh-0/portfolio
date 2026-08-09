@@ -817,7 +817,7 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
   if (!car) return;
   var curr = 0;
   car.innerHTML = DATA.testimonials.map(function(t, i) {
-    return '<div class="testi-slide' + (i === 0 ? ' active' : '') + '"><p class="testi-quote">' + t.quote + '</p><div class="testi-author">' + t.author + '</div><div class="testi-role">' + t.role + '</div></div>';
+    return '<div class="testi-slide' + (i === 0 ? ' active' : '') + '"><p class="testi-quote">' + t.quote + '</p></div>';
   }).join('');
   dots.innerHTML = DATA.testimonials.map(function(_, i) {
     return '<button class="testi-dot' + (i === 0 ? ' active' : '') + '" aria-label="Slide ' + (i+1) + '"></button>';
