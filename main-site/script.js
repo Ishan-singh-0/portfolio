@@ -14,8 +14,7 @@ var DATA={
   tech:[["monitor","Frontend"],["server","Backend"],["database","Database"],["cpu","AI / ML"],["cloud","Cloud"],["shield","Security"]],
   timeline:[
     {date:"2026 — Present",role:"Lead Developer",company:"Powerstik CRM",body:"Architected the full platform — AI chatbot, data dashboards, automated workflows. Reduced client data entry by 70%."},
-    {date:"2025",role:"Full Stack Developer",company:"Private Client",body:"Delivered a secure document portal for a CA firm. Encrypted storage, role-based access, clean UI."},
-    {date:"2022 — Present",role:"Independent Developer",company:"Freelance",body:"Building web applications, tools, and experimental projects independently."}
+    {date:"2025",role:"Full Stack Developer",company:"Private Client",body:"Delivered a secure document portal for a CA firm. Encrypted storage, role-based access, clean UI."}
   ],
   faqs:[
     ["What's your stack?","React, Next.js, Node.js for web apps. Python for AI/backend. Vanilla JS when performance matters."],
