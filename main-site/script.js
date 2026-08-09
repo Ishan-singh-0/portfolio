@@ -28,11 +28,11 @@ var DATA={
     {quote:"The code quality is exceptional. Clean, well-structured, and easy to maintain. Exactly what you want from a developer.",author:"Dev K.",role:"CTO, Private Client"}
   ],
   workflow:[
-    {num:"01",title:"Discovery",desc:"Understand the problem, the users, and what success looks like."},
-    {num:"02",title:"Architecture",desc:"Design the system before writing a line of code."},
-    {num:"03",title:"Build",desc:"Fast, iterative development with regular check-ins."},
-    {num:"04",title:"Test",desc:"Rigorous QA — edge cases, load, and UX."},
-    {num:"05",title:"Deploy",desc:"CI/CD pipelines, monitoring, and a smooth handover."}
+    {num:"01",title:"Discovery",desc:"Figure out what actually needs to be built."},
+    {num:"02",title:"Architecture",desc:"Plan the system. No guessing later."},
+    {num:"03",title:"Build",desc:"Write the code. Ship fast, iterate often."},
+    {num:"04",title:"Test",desc:"Break it before users do."},
+    {num:"05",title:"Deploy",desc:"Ship it. Monitor it. Done."}
   ],
   cmdItems:[
     {label:"About",sub:"Section",href:"#about",icon:"user"},
@@ -1129,35 +1129,73 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
     };
   });
 
-  var rotX = 0.003, rotY = 0.006;
+  // Accumulated rotation (applied each frame from velocity)
+  var velX = 0.0008, velY = 0.0015; // slow auto-spin
   var isDragging = false, lastMX = 0, lastMY = 0;
+  var DAMPING = 0.92; // friction — velocity decays each frame
 
-  canvas.addEventListener('mousedown', function(e) { isDragging = true; lastMX = e.clientX; lastMY = e.clientY; });
+  canvas.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    lastMX = e.clientX; lastMY = e.clientY;
+    velX = 0; velY = 0; // stop auto-spin on grab
+  });
   window.addEventListener('mouseup', function() { isDragging = false; });
   window.addEventListener('mousemove', function(e) {
     if (!isDragging) return;
-    rotY += (e.clientX - lastMX) * 0.005;
-    rotX += (e.clientY - lastMY) * 0.005;
+    var dx = e.clientX - lastMX;
+    var dy = e.clientY - lastMY;
+    // Very gentle sensitivity — 0.0003 instead of 0.005
+    velY = dx * 0.0003;
+    velX = dy * 0.0003;
     lastMX = e.clientX; lastMY = e.clientY;
   });
 
-  function rotate(tag) {
+  // Touch support with same damping
+  canvas.addEventListener('touchstart', function(e) {
+    isDragging = true;
+    lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+    velX = 0; velY = 0;
+  }, {passive: true});
+  window.addEventListener('touchend', function() { isDragging = false; });
+  window.addEventListener('touchmove', function(e) {
+    if (!isDragging) return;
+    var dx = e.touches[0].clientX - lastMX;
+    var dy = e.touches[0].clientY - lastMY;
+    velY = dx * 0.0003;
+    velX = dy * 0.0003;
+    lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+  }, {passive: true});
+
+  // Rotation angles accumulate
+  var angleX = 0, angleY = 0;
+
+  function rotateTag(tag) {
     // Rotate around Y
-    var cosY = Math.cos(rotY), sinY = Math.sin(rotY);
-    var x1 = tag.x * cosY - tag.z * sinY;
-    var z1 = tag.x * sinY + tag.z * cosY;
+    var cosY = Math.cos(angleY), sinY = Math.sin(angleY);
+    var x1 = tag.ox * cosY - tag.oz * sinY;
+    var z1 = tag.ox * sinY + tag.oz * cosY;
     // Rotate around X
-    var cosX = Math.cos(rotX), sinX = Math.sin(rotX);
-    var y1 = tag.y * cosX - z1 * sinX;
-    var z2 = tag.y * sinX + z1 * cosX;
+    var cosX = Math.cos(angleX), sinX = Math.sin(angleX);
+    var y1 = tag.oy * cosX - z1 * sinX;
+    var z2 = tag.oy * sinX + z1 * cosX;
     return { x: x1, y: y1, z: z2 };
   }
 
+  // Store original positions so we rotate from them cleanly
+  tags.forEach(function(t) { t.ox = t.x; t.oy = t.y; t.oz = t.z; });
+
   function draw() {
+    // Apply velocity + damping each frame
+    velX *= DAMPING;
+    velY *= DAMPING;
+    angleX += velX;
+    angleY += velY;
+
     ctx2.clearRect(0, 0, W, H);
     var projected = tags.map(function(tag) {
-      var r = rotate(tag);
-      tag.x = r.x; tag.y = r.y; tag.z = r.z;
+      var r = rotateTag(tag);
+      // Update original so cumulative rotation works
+      tag.ox = r.x; tag.oy = r.y; tag.oz = r.z;
       var scale = (r.z + 1.5) / 2.5;
       return {
         label: tag.label,
@@ -1167,12 +1205,15 @@ document.addEventListener("click",function(e){var b=e.target.closest(".faq-q");i
         z: r.z
       };
     });
+    // Reset angles after applying to tags (avoid float drift)
+    angleX = 0; angleY = 0;
+
     // Sort back-to-front
     projected.sort(function(a, b) { return a.z - b.z; });
     projected.forEach(function(t) {
       ctx2.save();
-      ctx2.globalAlpha = 0.3 + t.scale * 0.7;
-      ctx2.font = Math.round(9 + t.scale * 5) + 'px "JetBrains Mono", monospace';
+      ctx2.globalAlpha = 0.25 + t.scale * 0.75;
+      ctx2.font = Math.round(8 + t.scale * 5) + 'px "JetBrains Mono", monospace';
       ctx2.fillStyle = '#ffffff';
       ctx2.textAlign = 'center';
       ctx2.textBaseline = 'middle';
